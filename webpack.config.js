@@ -1,11 +1,12 @@
 const path=require('path')
 const VueLoaderPlugin = require('vue-loader/lib/plugin')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
-const webpack = require('webpack');
+const webpack = require('webpack')
+const devMode = process.env.NODE_ENV !== 'production'
 
 module.exports = {
 	// 入口，出口
-	target: 'web',
+	mode: 'development',
 	entry: path.join(__dirname,'src/index.js'),
 	output: {
 		filename:'bundle.js',
@@ -16,6 +17,10 @@ module.exports = {
 			{
 				test: /\.vue$/,
 				loader: 'vue-loader'
+			},
+			{
+				test: /\.jsx$/,
+				loader: 'babel-loader'
 			},
 			{
 				test: /\.css$/,
@@ -37,20 +42,26 @@ module.exports = {
 				]
 			},
 			{
-				test: /\.styl$/,
+				// 可能是styl，也可能是stylus（在style里面写的lang="stylus"）
+				test: /\.styl(us)?$/,
 				use: [
 				'vue-style-loader',
 				'css-loader',
+				{
+					loader: 'postcss-loader',
+					options: {
+						sourceMap: true
+					}
+				},
 				'stylus-loader'
 				]
 			}
 		]
 	},
-	mode: 'development',
 	plugins: [
     	new VueLoaderPlugin(),
     	new HtmlWebpackPlugin({
-    		title: 'Output Management'
+    		title: 'TODOLIST'
 		}),
 		new webpack.NamedModulesPlugin(),
         new webpack.HotModuleReplacementPlugin()
@@ -59,6 +70,7 @@ module.exports = {
     devtool: 'inline-source-map',
     devServer: {
     	contentBase: './dist',
+    	// 热加载
     	hot: true
 	}
 }
