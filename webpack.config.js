@@ -77,5 +77,30 @@ module.exports = {
     	contentBase: './dist',
     	// 热加载
     	hot: true
-	}
+	},
+	optimization: {
+        splitChunks: {
+          chunks: 'async',
+          minSize: 30000,
+          maxSize: 0,
+          minChunks: 1,
+          maxAsyncRequests: 5,
+          maxInitialRequests: 3,
+          automaticNameDelimiter: '~',
+          name: true,
+          cacheGroups: {
+            vendors: {
+                filename: `js/chunk-vendors.[contenthash].js`,
+                test: /[\\/]node_modules[\\/]/,
+                priority: -10,
+                chunks: 'initial'
+            },
+            default: {
+              minChunks: 2,
+              priority: -20,
+              reuseExistingChunk: true
+            }
+          }
+        }
+    }
 }
