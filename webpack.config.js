@@ -2,6 +2,7 @@ const path=require('path')
 const VueLoaderPlugin = require('vue-loader/lib/plugin')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const webpack = require('webpack')
+const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const devMode = process.env.NODE_ENV !== 'production'
 
 module.exports = {
@@ -9,7 +10,7 @@ module.exports = {
 	mode: 'development',
 	entry: path.join(__dirname,'src/index.js'),
 	output: {
-		filename:'bundle.js',
+		filename:devMode ? '[name].js' : '[name].[hash].js',
 		path:path.join(__dirname,'dist')
 	},
 	module: {
@@ -22,13 +23,13 @@ module.exports = {
 				test: /\.jsx$/,
 				loader: 'babel-loader'
 			},
-			{
-				test: /\.css$/,
-				use: [
-				'vue-style-loader',
-				'css-loader'
-				]
-			},
+			// {
+			// 	test: /\.css$/,
+			// 	use: [
+			// 	'vue-style-loader',
+			// 	'css-loader'
+			// 	]
+			// },
 			{
 				test: /\.(gif|jpg|jpeg|png|svg)$/,
 				use: [
@@ -45,7 +46,7 @@ module.exports = {
 				// 可能是styl，也可能是stylus（在style里面写的lang="stylus"）
 				test: /\.styl(us)?$/,
 				use: [
-				'vue-style-loader',
+				 devMode ? 'vue-style-loader' : MiniCssExtractPlugin.loader,
 				'css-loader',
 				{
 					loader: 'postcss-loader',
@@ -64,7 +65,11 @@ module.exports = {
     		title: 'TODOLIST'
 		}),
 		new webpack.NamedModulesPlugin(),
-        new webpack.HotModuleReplacementPlugin()
+        new webpack.HotModuleReplacementPlugin(),
+        new MiniCssExtractPlugin({
+     	 	filename: devMode ? '[name].css' : '[name].[hash].css',
+            chunkFilename: devMode ? '[id].css' : '[id].[hash].css',
+    })
     ],
     // 调试可以显示源代码，而不是编译后的
     devtool: 'inline-source-map',
