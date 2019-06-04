@@ -7,7 +7,12 @@
 		placeholder="接下来要做什么呢？" 
 		@keyup.enter="addTodo"
 		>
-		<Item :todo="todo"></Item>
+		<Item
+		 v-for='todo in todos'
+		 :key='todo.id'
+		 :todo="todo"
+		 @del='deleteTodo'
+		 ></Item>
 		<Tabs :filter='filter'></Tabs>
 	</section>
 </template>
@@ -22,17 +27,22 @@ export default {
 	},
 	data() {
 		return {
-			todo: {
-				id: 0,
-				content: "这是第一件事",
-				completed: true
-			},
+			id: 0,
+			todos: [],
 			filter: 'all'
 		}
 	},
 	methods:{
-		addTodo() {
-
+		addTodo(e) {
+			this.todos.unshift({
+				id: this.id++,
+				content: e.target.value.trim(),
+				completed: false
+			})
+			e.target.value=''
+		},
+		deleteTodo(id) {
+			this.todos.splice(this.todos.findIndex(todo => todo.id === id),1)
 		}
 	}
 };
