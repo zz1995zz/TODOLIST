@@ -8,12 +8,17 @@
 		@keyup.enter="addTodo"
 		>
 		<Item
-		 v-for='todo in todos'
+		 v-for='todo in filterTodos'
 		 :key='todo.id'
 		 :todo="todo"
 		 @del='deleteTodo'
 		 ></Item>
-		<Tabs :filter='filter'></Tabs>
+		<Tabs
+		:todos='todos' 
+		:filter='filter'
+		@toggle='toggleFilter'
+		@clearAll='clearAllCompleted'
+		></Tabs>
 	</section>
 </template>
 
@@ -29,20 +34,37 @@ export default {
 		return {
 			id: 0,
 			todos: [],
-			filter: 'all'
+			filter: '全部'
+		}
+	},
+	computed: {
+		filterTodos() {
+			if(this.filter == '全部'){
+				return this.todos
+			}
+			const completed = this.filter == '已完成'
+			return this.todos.filter(todo => todo.completed == completed)
 		}
 	},
 	methods:{
 		addTodo(e) {
-			this.todos.unshift({
+			if(e.target.value){
+				this.todos.unshift({
 				id: this.id++,
 				content: e.target.value.trim(),
 				completed: false
 			})
 			e.target.value=''
+			}
 		},
 		deleteTodo(id) {
 			this.todos.splice(this.todos.findIndex(todo => todo.id === id),1)
+		},
+		toggleFilter(state) {
+			this.filter = state
+		},
+		clearAllCompleted() {
+			this.todos = this.todos.filter(todo => todo.completed == false);
 		}
 	}
 };
